@@ -79,17 +79,27 @@ async def on_message(message):
     await bot.process_commands(message)
 
 
-# slash command to display chovy count for the user who calls the command
-@bot.tree.command(name="chovycountpersonal", description="Display how many times you've mentioned 'Chovy'")
-async def chovycountpersonal(interaction: discord.Interaction):
-    user_id = str(interaction.user.id)  # get user ID as a string
+# slash command to display chovy count for a single user (defaults to the person who called the command)
+@bot.tree.command(name="chovycountsomeone", description="Display how many times someone has mentioned 'Chovy'; defaults to you if no user is given")
+async def chovycountsomeone(interaction: discord.Interaction, member: discord.Member = None):
+    # default to the interaction user if no member is specified
+    if member is None:
+        member = interaction.user
 
-    # check if the user has a count and reply with their count
+    user_id = str(member.id)  # Convert the member's ID to string for JSON lookup
+
+    # check if the user has a 'Chovy' count and send a response
     if user_id in data['chovy_mentions']:
         count = data['chovy_mentions'][user_id]
-        await interaction.response.send_message(f"You mentioned 'Chovy' {count} times!")
+        if member == interaction.user:
+            await interaction.response.send_message(f"You have mentioned 'Chovy' {count} time(s)!")
+        else:
+            await interaction.response.send_message(f"{member.display_name} has mentioned 'Chovy' {count} time(s)!")
     else:
-        await interaction.response.send_message("You haven't mentioned 'Chovy' yet!")
+        if member == interaction.user:
+            await interaction.response.send_message("You haven't mentioned 'Chovy' yet!")
+        else:
+            await interaction.response.send_message(f"{member.display_name} hasn't mentioned 'Chovy' yet!")
 
 
 # slash command to display top 10 chovy counts for people in the server
@@ -109,3 +119,7 @@ async def chovycountleaderboard(interaction: discord.Interaction):
 
     # Send the leaderboard as a response
     await interaction.response.send_message(leaderboard_message)
+
+@bot.tree.command(name="frierengif", description="Frieren GIF")
+async def frierengif(interaction: discord.Interaction):
+    await interaction.response.send_message('https://tenor.com/view/frieren-aura-sousou-no-frieren-aura-the-guillotine-kys-gif-7251124731844031402')
