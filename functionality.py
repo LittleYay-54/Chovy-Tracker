@@ -85,9 +85,9 @@ async def chovycountpersonal(interaction: discord.Interaction):
     user_id = str(interaction.user.id)  # get user ID as a string
 
     # check if the user has a count and reply with their count
-    if user_id in data['chovy_count']:
-        count = data['chovy_count'][user_id]
-        await interaction.response.send_message(f"Your mentioned 'Chovy' {count} times!")
+    if user_id in data['chovy_mentions']:
+        count = data['chovy_mentions'][user_id]
+        await interaction.response.send_message(f"You mentioned 'Chovy' {count} times!")
     else:
         await interaction.response.send_message("You haven't mentioned 'Chovy' yet!")
 
@@ -96,7 +96,7 @@ async def chovycountpersonal(interaction: discord.Interaction):
 @bot.tree.command(name="chovycountleaderboard", description="Displays who has mentioned 'Chovy' the most in this server")
 async def chovycountleaderboard(interaction: discord.Interaction):
     # Sort the users by their chovy count, in descending order
-    sorted_chovy_counts = sorted(data['chovy_count'].items(), key=lambda item: item[1], reverse=True)
+    sorted_chovy_counts = sorted(data['chovy_mentions'].items(), key=lambda item: item[1], reverse=True)
 
     # Take the top 10 users
     top_10 = sorted_chovy_counts[:10]
